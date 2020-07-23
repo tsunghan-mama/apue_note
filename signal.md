@@ -10,11 +10,11 @@
 ## 10.2 Signal 基本概念
 
 - Signal 的數量是固定的，可以 `man signal` 去看。大多數 signal 都是作業系統設定好的，user 只能自己定義 SIGUSR1, SIGUSR2。
-- 再次重申 Signal 通常用在要通知 process 一個突發事件。因此可以看作是一個 signal $\rightarrow$ action 的 pair 來學習。 
+- 再次重申 Signal 通常用在要通知 process 一個突發事件。因此可以看作是一個 signal to action 的 pair 來學習。 
 
 ### A. Overview
 
-<img src="./signal.png"  style="zoom:50%" align=center/>
+<img src="./signal.png"  style="zoom:40%" align=center/>
 
 本章重點有三：
 1. Signal 如何被產生
@@ -29,14 +29,13 @@
 - Hardware exceptions : 硬體錯誤
     - 硬體首先偵測到問題並通知 kernel，接著 kernel 發送 signal 給 user process 
     - 舉例：divide by 0, invalid memory access, ...
-- Function kill() : owner 或 superuser 可以發送
-- Shell command kill
 - Software Conditions : 
     - 並不是 hardware 偵測到錯誤
     - 當某些 Software 事件發生時，signal 用於通知該程式
     - 舉例：
         - SIGPIPE : a process writes to a pipe that has no reader)
         - SIGALARM : an alarm clock set by the process expires
+- Function kill() : owner 或 superuser 可以發送 (ex:shell command kill)
 
 ### C. Signal Delivering
 
@@ -126,7 +125,7 @@ again:
 ```
 - 新的系統已經 default 會重新呼叫 system call。
 
-### 10.4 Reentrant Function
+## 10.4 Reentrant Function
 
 - 什麼是 reentrant function
     - Function is called reentrant if it can be interrupted in the middle of its execution and then safely called again ("re-entered") before its previous invocations complete execution
@@ -144,7 +143,7 @@ again:
     - 會在 multi-thread function & signal handler 遇上
     - 因此在撰寫這些 function 的時候要注意是否是 reentrant function 以確保程式每次執行的結果都相同。
 
-### Reference
+## Reference
 
 1. APUE Textbook
 2. [施吉昇教授授課內容](https://systemprogrammingatntu.github.io)
