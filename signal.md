@@ -129,8 +129,7 @@ again:
 
 - 什麼是 reentrant function
     - Function is called reentrant if it can be interrupted in the middle of its execution and then safely called again ("re-entered") before its previous invocations complete execution
-    - A function is described as reentrant if it can be safely called recursively.
-    - 在這裡 reentrant function 只討論被 interrupt 或者被 signal 打斷的狀況。並不考慮 recursion。
+    - 在這裡 reentrant function 只討論被 interrupt 或者被 signal 打斷的狀況，主要在探討 multi-task 的狀況下該 function 是否有問題。
     - 詳細可以參考這篇很棒的[維基百科](https://en.wikipedia.org/wiki/Reentrancy_(computing))
 
 - 怎麼樣的 Function non-reentrant
@@ -142,6 +141,92 @@ again:
 - 什麼時候需要用上他
     - 會在 multi-thread function & signal handler 遇上
     - 因此在撰寫這些 function 的時候要注意是否是 reentrant function 以確保程式每次執行的結果都相同。
+
+## 10.5 Reliable Signal
+
+- Quick Review
+    - Signal Generation -> Pending -> Signal Deliver (先前說的)
+    - signal function 的問題們 (會造成 unreliable signal)
+        - 無法 pending 等等收 signal
+        - 需要重複註冊 signal
+        - 無法知道舊的 signal action
+- 改進後 (換 API & 發明的 **signal block** 機制)
+    - Signal Generation : 產生 signal 並記錄於 kernel space。 (set flag)
+    - Signal Pending : Signal 產生到 Deliver 中間的時間差
+    - Signal Deliver : Kernel 發送給特定 process signal，採取 action
+        - Process 可以設定 block 特定 signal，直到他 unblock 或者設定成 ignore。
+        - 可以透過 `sigpending()` 這個 function 判斷哪些 signal 在 pending, block
+        - POSIX 沒有規定 signal 執行的順序，不過通常都是越重要的越先執行
+    - Signal Queue
+        - 因為有 block 的設計，所以就會需要 queue 去存放對一個 process 重複送同個 signal
+        - 作業系統可能會發送給 process 一次 or 多次 signal (POSIX 沒有定義)
+
+## 10.6 Signal 相關 API
+
+### A. Signal Generation
+
+```C
+#include <signal.h>
+int kill(pid_t pid, int signo); // 送 signal 給特定 給特定 process 或 process group
+int raise(int signo);           // 送 signal 給自幾
+```
+
+- Superuser 或 uid or euid 相同才可以送 signal
+- `kill(0)` 可以送一個無害的 signal
+- 用法自己去 man (記得要 `man 2 kill` 才會看到 C 的 API)
+
+### B. Block Signal
+
+```C
+sigprocmask                 // process 註冊一些 signal 要 pending
+sigpending                  // 告訴我們哪些 signal 在 pending 狀態
+```
+
+#### 設定、改變 Signal Mask
+
+```C
+#include <signal.h>
+int sigemptyset(sigset_t *set);
+int sigfillset(sigset_t *set);
+int sigaddset(sigset_t *set, int signo);
+int sigdelset(sigset_t *set, int signo);
+int sigismember(const sigset_t *set, int signo);    // 檢查 signo 是否在 set 中
+```
+
+#### Process 操控 block 相關
+
+```C
+#include <signal.h>
+// 給定舊的 signal mask & 要新增的 signal mask，看要 block or unblock
+int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
+int sigpending(sigset_t *set);      // 回傳被 pending or block 住的 signals
+```
+
+### C. Signal Handler
+
+舊的時候用 `signal`，現在都改成 `sigaction`
+
+```C
+#include <signal.h>
+int sigaction(int signo, const struct sigaction *restrict act,
+              struct sigaction *restrict oact);
+```
+
+- 用於檢查 or 修改 handler
+- 另外也引入了 signal mask，可以更複雜的設定 block
+- 詳細的參數要再去看 man page
+
+### D. Signal Related
+
+```C
+#include <unistd.h>
+unsigned int alarm(unsigned int seconds);   // 倒數幾秒，時間到了就跳 SIGALARM
+int pause(void);                            // suspends the calling process until a signal is caught.
+```
+
+## 10.7 Nested Signal
+
+
 
 ## Reference
 
