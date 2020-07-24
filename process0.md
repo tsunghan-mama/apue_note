@@ -78,13 +78,13 @@ shared object file.
     - UNIX 系統用的標準格式是 ELF (Executable and Linkable Format)
 
 ### ELF Format
-    - 可以簡單分為 File Header, Program Header、Sections 以及 Section Table 四個部分
-    - Headers (自行查表)
-    - Sections : `.text` (code), `.data` (initialized static data), `.bss` (uninitialized static data)
-    - Section Table : `.symtab` (symbol table)、`.rel.txt, .rel.data` (relocation information)，這些都是 linker 日後連結時需要用的資訊。像是需要把多個 obj file 的 `.text` section 合併、Function Definition 跟 Reference 要對上(靠Symbol Table)、Static data 統一放到 `.data` or `.bss` section，並且填上位置。
-    - 更詳細的可以參考
-        - [wikipedia](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header)
-        - [某課程的 slide](http://web.cse.ohio-state.edu/~reeves.92/CSE2421au12/SlidesDay51.pdf)
+- 可以簡單分為 File Header, Program Header、Sections 以及 Section Table 四個部分
+- Headers (自行查表)
+- Sections : `.text` (code), `.data` (initialized static data), `.bss` (uninitialized static data)
+- Section Table : `.symtab` (symbol table)、`.rel.txt, .rel.data` (relocation information)，這些都是 linker 日後連結時需要用的資訊。像是需要把多個 obj file 的 `.text` section 合併、Function Definition 跟 Reference 要對上(靠Symbol Table)、Static data 統一放到 `.data` or `.bss` section，並且填上位置。
+- 更詳細的可以參考
+    - [wikipedia](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#File_header)
+    - [某課程的 slide](http://web.cse.ohio-state.edu/~reeves.92/CSE2421au12/SlidesDay51.pdf)
 
 ### 回到 as
 
