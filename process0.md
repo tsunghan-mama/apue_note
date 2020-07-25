@@ -33,9 +33,23 @@ int main(void){
 
 ### include search path 在哪？
 
-`cpp -v /dev/null -o /dev/null` 可以看到
+- `cpp -v /dev/null -o /dev/null` 可以看到類似下面的內容，這些是在系統裝 gcc 的時候就定下來了
 
-`man cpp` 可以發現他就是 C preprocessor (C++也用這個)
+```shell
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/gcc/x86_64-linux-gnu/9/include
+ /usr/local/include
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+End of search list.
+```
+
+- `man cpp` 可以發現他就是 C preprocessor
+
+- 如果想要新增 include path 怎麼辦？
+    1. 寫絕對位置 (ex: `#include "/usr/lib/..."`)
+    2. 善用 `gcc -I` option (ex: `gcc -I/usr/include/eigen3/`，接著就可以 `#include <Eigen/Dense>`)
 
 ## 3. Compilation
 
