@@ -26,10 +26,16 @@ int main(void){
 
 ## 2. Preprocessing
 
-- macro 展開
-- 參照標投檔的內容
-
 `gcc -E hello.c -o hello.i`
+
+- macro 展開
+- 參照標頭檔的內容展開
+
+### include search path 在哪？
+
+`cpp -v /dev/null -o /dev/null` 可以看到
+
+`man cpp` 可以發現他就是 C preprocessor (C++也用這個)
 
 ## 3. Compilation
 
